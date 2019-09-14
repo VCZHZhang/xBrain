@@ -1,0 +1,55 @@
+# Project: xBrainTest
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main.o ../Cpp/BrainTest.o ../Cpp/CJSONTest.o ../Cpp/DataNode.o ../Cpp/HttpPacker.o ../Cpp/HttpResponseParse.o ../Cpp/HttpResponseParse-main.o ../Cpp/CJson.o ../Cpp/threadpool.o threadpool-test.o
+LINKOBJ  = main.o ../Cpp/BrainTest.o ../Cpp/CJSONTest.o ../Cpp/DataNode.o ../Cpp/HttpPacker.o ../Cpp/HttpResponseParse.o ../Cpp/HttpResponseParse-main.o ../Cpp/CJson.o ../Cpp/threadpool.o threadpool-test.o
+LIBS     = -L"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"D:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+BIN      = xBrainTest.exe
+CXXFLAGS = $(CXXINCS) 
+CFLAGS   = $(INCS) 
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+../Cpp/BrainTest.o: ../Cpp/BrainTest.cpp
+	$(CPP) -c ../Cpp/BrainTest.cpp -o ../Cpp/BrainTest.o $(CXXFLAGS)
+
+../Cpp/CJSONTest.o: ../Cpp/CJSONTest.cpp
+	$(CPP) -c ../Cpp/CJSONTest.cpp -o ../Cpp/CJSONTest.o $(CXXFLAGS)
+
+../Cpp/DataNode.o: ../Cpp/DataNode.cpp
+	$(CPP) -c ../Cpp/DataNode.cpp -o ../Cpp/DataNode.o $(CXXFLAGS)
+
+../Cpp/HttpPacker.o: ../Cpp/HttpPacker.cpp
+	$(CPP) -c ../Cpp/HttpPacker.cpp -o ../Cpp/HttpPacker.o $(CXXFLAGS)
+
+../Cpp/HttpResponseParse.o: ../Cpp/HttpResponseParse.cpp
+	$(CPP) -c ../Cpp/HttpResponseParse.cpp -o ../Cpp/HttpResponseParse.o $(CXXFLAGS)
+
+../Cpp/HttpResponseParse-main.o: ../Cpp/HttpResponseParse-main.cpp
+	$(CPP) -c ../Cpp/HttpResponseParse-main.cpp -o ../Cpp/HttpResponseParse-main.o $(CXXFLAGS)
+
+../Cpp/CJson.o: ../Cpp/CJson.c
+	$(CPP) -c ../Cpp/CJson.c -o ../Cpp/CJson.o $(CXXFLAGS)
+
+../Cpp/threadpool.o: ../Cpp/threadpool.c
+	$(CPP) -c ../Cpp/threadpool.c -o ../Cpp/threadpool.o $(CXXFLAGS)
+
+threadpool-test.o: threadpool-test.cpp
+	$(CPP) -c threadpool-test.cpp -o threadpool-test.o $(CXXFLAGS)
