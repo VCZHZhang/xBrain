@@ -55,6 +55,7 @@ emmstr* HttpPacker::Pack()
 	if (m_eHole.buf)
 	{
 		free(m_eHole.buf);
+		m_eHole.buf  = NULL;
 		m_eHole.size = 0;
 	}
 	m_eHole.size = totalLen;
