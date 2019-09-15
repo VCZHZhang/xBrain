@@ -3,7 +3,7 @@ CPP = g++
 RM = rm
 MKDIR = mkdir
 CFLAGS = -Wall -std=gnu99 
-CPPFLAGS = -Wall  
+CPPFLAGS = -Wall -std=c++11  
 LDFLAGS = -lpthread
 DIR_OBJS = ../objs_c
 DIR_OBJS_CPP = ../objs_cpp
