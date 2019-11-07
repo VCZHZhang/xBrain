@@ -28,6 +28,7 @@ int process_check(const char *process_name, int len, int pid)
 	return val;
 }
 
+#if 0
 int main(int argc, char **arv)
 {
 
@@ -35,3 +36,4 @@ int main(int argc, char **arv)
 	printf("ret:%d\n", ret);
 	return 1;
 }
+#endif

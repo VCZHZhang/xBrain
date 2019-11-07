@@ -7,7 +7,7 @@ Function: read the Ini config file.
 ***************************************************/
 
 #include "IniReaderPlus.h"
-#include "UtilString.h"
+#include "util_string.h"
 #include <iostream>
 #include <fstream>
 using std::string;

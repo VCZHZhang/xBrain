@@ -28,6 +28,43 @@ cJSON* packJsonData()
  	
  	return root;
 }
+
+void DoTest2()
+{
+
+	char value1[] = {"[\"keyinner\":\"valueinner\"]"};
+
+
+	cJSON *root = cJSON_CreateObject();
+	cJSON_AddStringToObject(root, "key", value1);
+	char *out = cJSON_Print(root);
+	printf("out:%s\n", out);
+	printf("end DoTest2\n");
+
+	// æˆ‘å†å–å‡ºæ¥
+	cJSON *parse = cJSON_Parse(out);
+
+	cJSON *value_out = cJSON_GetObjectItem(parse, "key");
+	printf("out value:%s\n", value_out->valuestring);
+	/*
+		char *data = "{\"love\": \
+	[\"LOL\",\"[\"key\":\"value\"]Go shopping\"]   \
+	}";
+	*/
+#if 0
+	char *data = "{\"love\": \
+	[\"LOL\",\"Go shopping\"]   \
+	}";
+	cJSON *root = cJSON_Parse(data);
+	char *print = cJSON_Print (root);
+	printf("out:%s", print);
+	cJSON_Delete(root);
+
+#endif
+
+	
+}
+
 void DoTest()
 {
 	#if 0
@@ -45,7 +82,8 @@ void DoTest()
 	cJSON *newRoot = parseJson(root);
 	cJSON_Delete(root);
 	showJson(newRoot);
-	printf("\newRoot:\n%s\n", cJSON_Print(newRoot));
+	printf("\n cjson_print newRoot:\n%s\n", cJSON_Print(newRoot));
+	printf("\n cJSON_PrintUnformatted newRoot:\n%s\n", cJSON_PrintUnformatted(newRoot));
 }
 
 cJSON* parseJson(cJSON *root)
@@ -76,7 +114,7 @@ cJSON* parseJson(cJSON *root)
 
 void showJson(cJSON *root)
 {
-	printf ("¿ªÊ¼±éÀú.\n");
+	printf ("start parse.\n");
 	if (!root)	return ;
 	cJSON *cur = root->child;
 	while (cur)

@@ -9,6 +9,7 @@ extern "C"
 #endif 
 
 void DoTest();
+void DoTest2();
 cJSON* TestJson();
 cJSON* parseJson(cJSON *root);
 
