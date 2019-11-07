@@ -1,0 +1,13 @@
+"D:\Program Files\arm\bin\armproc.dll" 
+
+"D:\Program Files\arm\bin\armsim2.dll" 
+
+"F:\repos\truck\xBrain\xBrain\assemble\arm\Debug\Exe\testproj.out" 
+
+--plugin="D:\Program Files\arm\bin\armbat.dll" 
+
+--device_macro="D:\Program Files\arm\config\debugger\ST\STM32F1xx.dmac" 
+
+
+
+
