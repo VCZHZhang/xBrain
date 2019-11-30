@@ -26,9 +26,9 @@ int GenSession(char *dst, int dstlen)
 	
 	#endif
 	
-	struct timeval start, end;
+	struct timeval start;//, end;
 	gettimeofday(&start, NULL);
-	snprintf(dst, dstlen, "%d:%d", start.tv_sec, start.tv_usec); 
+	snprintf(dst, dstlen, "%ld:%ld", start.tv_sec, start.tv_usec); 
 	printf("session:%s\n", dst); 
 	return 1;	
 }

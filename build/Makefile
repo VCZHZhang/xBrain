@@ -1,63 +1,40 @@
 CC = gcc
 CPP = g++
+CXX = g++
 RM = rm
 MKDIR = mkdir
-CFLAGS = -Wall -std=gnu99 
-CPPFLAGS = -Wall -std=c++11  
+INC_PATH = -I./xFile
+CFLAGS = -c -Wall -std=gnu99  
+CPPFLAGS = -c -Wall -std=c++11  
 LDFLAGS = -lpthread
 DIR_OBJS = ../objs_c
 DIR_OBJS_CPP = ../objs_cpp
 DIR_EXEC = ../exec
 
-DIRS := $(DIR_OBJS) $(DIR_EXEC) $(DIR_OBJS_CPP)
-EXEC = xBrain 
-SRCS = $(wildcard ../Cpp/*.c)
-NODIR_SRCS_C = $(notdir $(SRCS))
-OBJS = $(patsubst %.c,%.o, $(SRCS))
-tmp = $(notdir $(OBJS))
-OBJS := $(addprefix $(DIR_OBJS)/,$(tmp))
-C_OBJS_NO_DIR = $(notdir $(OBJS))
+VPATH = .:./xFile
+TARGET = ../exec/Brain
 
-SRCS_CPP = $(wildcard ../Cpp/*.cpp)
-NODIR_SRCS_CPP = $(notdir $(SRCS_CPP))
-OBJS_CPP = $(patsubst %.cpp,%.o, $(SRCS_CPP))
-tmp_cpp = $(notdir $(OBJS_CPP))
-OBJS_CPP := $(addprefix $(DIR_OBJS_CPP)/,$(tmp_cpp))
+SRC_PATH = ../Cpp
+DIRS = $(shell find $(SRC_PATH) -maxdepth 4 -type d)
+SRC_CPP += $(foreach dir, $(DIRS), $(wildcard $(dir)/*.cpp))
+SRC_C +=   $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
 
+OBJS_CPP = $(patsubst %.cpp, %.o, $(SRC_CPP))
+OBJS_C   = $(patsubst %.c, %.o, $(SRC_C))
 
-EXEC := $(addprefix $(DIR_EXEC)/,$(EXEC))
+$(TARGET): $(OBJS_CPP)  $(OBJS_C)  
+	$(CXX) $^ -o $@ $(LDFLAGS)
+	echo Create $(TARGET) Success.
+$(OBJS_CPP):%.o : %.cpp  
+	$(CXX) $(CPPFLAGS) $< -o $@   
+          
+$(OBJS_C):%.o : %.c  
+	$(CC) $(CFLAGS) $< -o $@    
 
-# dirs and targets
-all: $(DIRS) $(EXEC)
-#all: $(DIRS) 
-$(DIRS):
-	$(MKDIR) $@
-$(EXEC):$(OBJS) $(OBJS_CPP)
-	echo "trigger"
-	$(CXX) -o $@ $^ $(LDFLAGS)
-
-$(DIR_OBJS)/%.o:../Cpp/%.c 
-#	echo "compiler"
-#	echo -e "yilai:"$^ "mubiao:" $@
-	$(CC) $(CFLAGS)  -o $@ -c $^ $(CFLAGS)
-
-$(DIR_OBJS_CPP)/%.o:../Cpp/%.cpp
-#	echo "compiler"
-#	echo -e "yilai:"$^ "mubiao:" $@
-	$(CXX)  -o $@ -c $^ $(CPPFLAGS)
-
-clean:
-	$(RM) -rf  $(DIRS) $(EXEC)
-	$(RM) -rf ../source/*.o
-
-.PHONY: show
 show:
-	@echo  "src:" $(SRCS)
-	@echo  "src_cpp:" $(SRCS_CPP)
-	@echo "objs:"$(OBJS)
-	@echo "DIR_OBJS:"$(DIR_OBJS)
-	@echo  "tmp:" $(tmp)
-	@echo "c_objs_no_dir" $(C_OBJS_NO_DIR)
-
-.PHONY: all clean
-
+	echo $(DIRS)
+	echo $(OBJS_C)
+	echo $(OBJS_CPP)
+.PHONY : clean  
+clean:  
+	rm  $(TARGET) $(OBJS_CPP)  $(OBJS_C) 

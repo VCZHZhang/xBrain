@@ -1,0 +1,80 @@
+CC = gcc
+CPP = g++
+RM = rm
+MKDIR = mkdir
+INC = -I./xFile
+CFLAGS = -Wall -std=gnu99  
+CPPFLAGS = -Wall -std=c++11  
+LDFLAGS = -lpthread
+DIR_OBJS = ../objs_c
+DIR_OBJS_CPP = ../objs_cpp
+DIR_EXEC = ../exec
+
+VPATH = .:./xFile
+
+DIRS := $(DIR_OBJS) $(DIR_EXEC) $(DIR_OBJS_CPP)
+EXEC = xBrain 
+SRCS = $(wildcard ../Cpp/*.c )
+SRCS += $(wildcard ../Cpp/xFile/*.c)
+SRCS += $(wildcard ../Cpp/test/*.c)
+
+NODIR_SRCS_C = $(notdir $(SRCS))
+OBJS = $(patsubst %.c,%.o, $(SRCS))
+tmp = $(notdir $(OBJS))
+OBJS := $(addprefix $(DIR_OBJS)/,$(tmp))
+C_OBJS_NO_DIR = $(notdir $(OBJS))
+
+SRCS_CPP = $(wildcard ../Cpp/*.cpp)
+SRCS_CPP += $(wildcard ../Cpp/xFile/*.cpp)
+SRCS_CPP += $(wildcard ../Cpp/test/*.cpp)
+
+NODIR_SRCS_CPP = $(notdir $(SRCS_CPP))
+OBJS_CPP = $(patsubst %.cpp,%.o, $(SRCS_CPP))
+tmp_cpp = $(notdir $(OBJS_CPP))
+OBJS_CPP := $(addprefix $(DIR_OBJS_CPP)/,$(tmp_cpp))
+
+EXEC := $(addprefix $(DIR_EXEC)/,$(EXEC))
+
+# dirs and targets
+all: $(DIRS) $(EXEC)
+#all: $(DIRS) 
+$(DIRS):
+	$(MKDIR) $@
+$(EXEC):$(OBJS) $(OBJS_CPP)
+	echo "trigger"
+	$(CXX)  -o $@ $^ $(LDFLAGS)
+
+$(DIR_OBJS)/%.o:../Cpp/%.c 
+#	echo "compiler"
+#	echo -e "yilai:"$^ "mubiao:" $@
+	$(CC) $(INC) $(CFLAGS)    -o $@ -c $^ 
+$(DIR_OBJS)/CJson.o:../Cpp/xFile/CJson.c
+	$(CC) $(CFLAGS) -o $@ -c $^ 
+
+
+$(DIR_OBJS_CPP)/%.o:../Cpp/%.cpp
+#	echo "compiler"
+#	echo -e "yilai:"$^ "mubiao:" $@
+	$(CXX)  $(INC) $(CPPFLAGS)  -o $@ -c $^ 
+
+$(DIR_OBJS_CPP)/BrainTest.o:../Cpp/test/BrainTest.cpp
+	$(CXX) $(CFLAGS) -o $@ -c $^ 
+
+$(DIR_OBJS_CPP)/CJSONTest.o:../Cpp/test/CJSONTest.cpp
+	$(CXX) $(CFLAGS) -o $@ -c $^ 
+clean:
+	$(RM) -rf  $(DIRS) $(EXEC)
+	$(RM) -rf ../source/*.o
+
+########################################################333
+.PHONY: show
+show:
+	@echo  "src:" $(SRCS)
+	@echo  "src_cpp:" $(SRCS_CPP)
+	@echo "objs:"$(OBJS)
+	@echo "DIR_OBJS:"$(DIR_OBJS)
+	@echo  "tmp:" $(tmp)
+	@echo "c_objs_no_dir" $(C_OBJS_NO_DIR)
+
+.PHONY: all clean
+

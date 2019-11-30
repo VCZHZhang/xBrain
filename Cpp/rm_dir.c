@@ -9,6 +9,9 @@ time: 2019-08-19
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <unistd.h>
+
+int remove_dir_sub(char *dir_full_path);
 int mylog(const char *format, ...)
 {
 

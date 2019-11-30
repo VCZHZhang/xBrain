@@ -3,7 +3,7 @@
 #include <string.h>
 #include "CJSONTest.h"
 
-#include "EmmManager-Test.h"
+#include "../EmmManager-Test.h"
 using namespace std;
 int main(int argc, char **argv)
 {

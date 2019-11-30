@@ -2,7 +2,7 @@
 #define __CJSONTEST_H__
 #include <stdlib.h>
 #include <stdio.h> 
-#include "CJson.h"
+#include "../xFile/CJson.h"
 #ifdef __cplusplus
 extern "C"
 {
