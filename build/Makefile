@@ -22,6 +22,7 @@ SRC_C +=   $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
 OBJS_CPP = $(patsubst %.cpp, %.o, $(SRC_CPP))
 OBJS_C   = $(patsubst %.c, %.o, $(SRC_C))
 
+all: $(TARGET) 
 $(TARGET): $(OBJS_CPP)  $(OBJS_C)  
 	$(CXX) $^ -o $@ $(LDFLAGS)
 	echo Create $(TARGET) Success.
