@@ -5,6 +5,8 @@
 
 #include "../EmmManager-Test.h"
 using namespace std;
+
+#if 0
 int main(int argc, char **argv)
 {
 	DoTest2();
@@ -14,3 +16,4 @@ int main(int argc, char **argv)
 #endif 
 	 return 0;
 }
+#endif 

@@ -4,8 +4,8 @@ CXX = g++
 RM = rm
 MKDIR = mkdir
 INC_PATH = -I./xFile
-CFLAGS = -c -Wall -std=gnu99  
-CPPFLAGS = -c -Wall -std=c++11  
+CFLAGS = -g -c -Wall -std=gnu99  
+CPPFLAGS = -g -c -Wall -std=c++11  
 LDFLAGS = -lpthread
 DIR_OBJS = ../objs_c
 DIR_OBJS_CPP = ../objs_cpp
