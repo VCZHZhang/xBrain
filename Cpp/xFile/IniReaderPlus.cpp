@@ -15,21 +15,34 @@ using std::ifstream;
 using std::ios;
 using std::cout;
 using std::endl;
-
+using namespace std;
+#define Log  std::cout;
 namespace ACE {
 
-IniReaderPlus::IniReaderPlus(const string &strfile):_strfile(strfile), _bscan(false) 
+IniReaderPlus::IniReaderPlus(const string &strfile):_bscan(false), _strfile(strfile)
 {
 }
 
-IniReaderPlus::~IniReaderPlus() 
+void IniReaderPlus::destroy()
 {
-	map<string, map<string, LineInfo> *>::iterator iter = _cfgDict.begin();
+	map<string, map<string, LineInfo*> *>::iterator iter = _cfgDict.begin();
 	for (; iter != _cfgDict.end(); ++iter)
 	{
 		delete iter->second;
 		iter->second = NULL;
 	}
+
+	auto iter2 = _allLine.begin();
+	for (; iter2 != _allLine.end(); ++iter2)
+	{
+		delete *iter2;
+		*iter2 = NULL;
+	}
+}
+
+IniReaderPlus::~IniReaderPlus() 
+{
+	this->destroy();
 }
 
 string IniReaderPlus::GetValue(const char * section, const char *szname) 
@@ -38,13 +51,14 @@ string IniReaderPlus::GetValue(const char * section, const char *szname)
 		ScanCfgFile();
 	}
 	
-	map<string, map<string, LineInfo>*>::const_iterator iter = _cfgDict.find(section);
-	if (iter != _cfgDict.end()) {
-		map<string, LineInfo> &tmp = *(iter->second);
-		map<string, LineInfo>::const_iterator iter2 = tmp.find(szname);
+	map<string, map<string, LineInfo*>*>::iterator iter = _cfgDict.find(std::string(section));
+	if (iter != _cfgDict.end()) 
+	{
+		map<string, LineInfo*> &tmp = *(iter->second);
+		map<string, LineInfo*>::const_iterator iter2 = tmp.find(szname);
 		if (iter2 != tmp.end())
 		{
-			return iter2->second._val;
+			return iter2->second->_val;
 		}
 	}
 	
@@ -56,12 +70,18 @@ string IniReaderPlus::GetOptValue(const char *section, const char *szname, const
 	return (ret=="")? strdefault:ret;
 }
 
-int IniReaderPlus::ScanCfgFile() {
+int IniReaderPlus::Reload()
+{
+	this->destroy();
+	this->ScanCfgFile();
+	return 1;
+}
+
+int IniReaderPlus::ScanCfgFile() 
+{
 	std::ifstream file(_strfile.c_str(), ios::in);
 	if (!file.is_open())	return -1;
-	// 0x0A 换行符
 	//# 注释行
-	// ; 一个键对应的值结束
 	// [] 块
 	string strSection;
 	char szline[256];
@@ -75,7 +95,8 @@ int IniReaderPlus::ScanCfgFile() {
 	{
 		string tt = string(szline);
 		lineNum++;
-		LineInfo li;
+		LineInfo *pli = new LineInfo;
+		LineInfo &li = *pli;
 		li._lineNum = lineNum;
 		li._src = tt;
 
@@ -131,45 +152,48 @@ int IniReaderPlus::ScanCfgFile() {
 			li._val = val;
 		}
 
-		_allLine[lineNum] = li;
 		if (ei._errNo)
 		{
 			break;
 		}
 
+		_allLine.push_back(pli);
+
 	}// end while
 
 	if (ei._errNo)
 	{
+		cout<<ei._errNo<<ei._info<<endl;
 		return -1;
 	}
 	// do transfer
-	this->Transfer();
+	this->transfer();
 	_bscan = true;
 	return 0;
 }
 
-int IniReaderPlus::Transfer()
+int IniReaderPlus::transfer()
 {
 	cout<<"xx"<<endl;
 	for (auto it = _allLine.begin(); it != _allLine.end(); ++it)
 	{
-		if (typ_field != it->second._type)
+		if (typ_field != (*it)->_type)
 		{
 			continue;
 		}
 		cout<<"xx"<<endl;
 		//
-		map<string, map<string, LineInfo> *>::iterator iter = _cfgDict.find(it->second._sectionName);
+		map<string, map<string, LineInfo*> *>::iterator iter = _cfgDict.find((*it)->_sectionName);
 		if (iter != _cfgDict.end())
 		{
-			(iter->second)->insert(make_pair(it->second._key, it->second));
+			(iter->second)->insert(std::make_pair((*it)->_key, *it));
+			// (iter->second)->insert(std::make_pair("ss", LineInfo()));
 		}
 		else 
 		{
-			map<string, LineInfo> *tmp = new map<string, LineInfo>;
-			tmp->insert(make_pair(it->second._key, it->second));
-			_cfgDict.insert(make_pair(it->second._sectionName, tmp));
+			map<string, LineInfo*> *tmp = new map<string, LineInfo*>;
+			tmp->insert(make_pair((*it)->_key, *it));
+			_cfgDict.insert(make_pair((*it)->_sectionName, tmp));
 		}
 	}
 
@@ -192,7 +216,7 @@ void IniReaderPlus::show()
 		auto it_in = it->second->begin();
 		while (it_in != ((it->second))->end()) 
 		{
-			cout<<(it_in)->first<<"="<<(it_in)->second._val<<endl;
+			cout<<(it_in)->first<<"="<<(it_in)->second->_val<<endl;
 			++it_in;
 		}
 		++it;
@@ -201,13 +225,127 @@ void IniReaderPlus::show()
 
 int IniReaderPlus::Remove(std::string &section, std::string &key)
 {	
-	
-	return 1;
+	//
+	auto it = _cfgDict.find(section);
+	if (it == _cfgDict.end())
+		return 0;
+	auto itInner = it->second->find(key);
+	if (itInner == it->second->end())
+		return 0;
+	int lineNum = -1;
+	lineNum = itInner->second->_lineNum;
+
+	list<LineInfo*>::iterator itList = _allLine.begin();
+	for (; itList != _allLine.end(); ++itList)
+	{
+		if (lineNum == (*itList)->_lineNum)
+		{
+			_allLine.erase(itList);
+			return 1;
+		}	
+	}
+
+	return 0;
 }
 
 int IniReaderPlus::Modify(std::string &section, std::string &key, std::string &newval)
 {
+	auto it = this->find(section, key);
+	if (it == _allLine.end())
+		return 0;
+	(*it)->_val = newval;
+
 	return 1;
 }
+
+list<LineInfo*>::iterator IniReaderPlus::find(const std::string &section, const string &key)
+{
+	auto it = _cfgDict.find(section);
+	if (it == _cfgDict.end())
+		return _allLine.end();
+
+	auto itInner = it->second->find(key);
+	if (itInner == it->second->end())
+		return _allLine.end();
+
+	int lineNum = -1;
+	lineNum = itInner->second->_lineNum;
+	list<LineInfo*>::iterator itList = _allLine.begin();
+	for (; itList != _allLine.end(); ++itList)
+	{
+		if (lineNum == (*itList)->_lineNum)
+		{
+			return itList;
+		}
+	}
+
+	return _allLine.end();
+}
+
+list<LineInfo*>::iterator IniReaderPlus::find(const string &section)
+{
+	auto it = _allLine.begin();
+	for (; it != _allLine.end(); ++it)
+	{
+		if (typ_section == (*it)->_type)
+		{
+			return it;
+		}
+	}
+
+	return _allLine.end();
+}
+
+
+    // 默认在块的最后添加， mode = 1 在块的最开头添加
+int IniReaderPlus::AddBaseSection(const string &section, const string &newkey, const string &newval, int mode)
+{
+	auto it = this->find(section);
+	if (it == _allLine.end())
+	{
+		return 0;
+	}
+
+	auto operit = it;
+	auto pre = operit;
+	if (0 == mode)
+	{
+		while (operit != _allLine.end())
+		{
+			if (typ_section == (*(++operit))->_type)
+			{
+				break;
+			}
+			pre = operit;
+		}
+	}
+
+	//
+	/*
+		int _lineNum;
+		std::string _src;
+		Type _type;
+		std::string _sectionName;
+		std::string _key;
+		std::string _val;
+	*/
+	LineInfo *li = new LineInfo();
+	li->_lineNum = (*pre)->_lineNum + 1;
+	li->_src = newkey + " = " + newval;
+	li->_type = typ_field;
+	li->_key = newkey;
+	li->_val = newval; 
+	// insert 是在前面插入
+	_allLine.insert(++pre, li);
+	return 1;
+}
+    // 默认加在原 key 的后面， mode = 1 在原 key 后面添加
+int IniReaderPlus::AddBaseField(const string &section, const string &key, 
+				const string &newkey, const string &newval, int mode)
+				
+{
+	return 1;
+}
+
 
 }// namespace ACE
