@@ -4,7 +4,7 @@ Creator: jxdeng3264@163.com
 Time: 2019-10-15
 Function: read the Ini config file.
 ***************************************************/
-
+#include <errno.h>
 #include <iostream>
 #include <fstream>
 #include "IniReaderPlus.h"
@@ -40,6 +40,22 @@ void IniReaderPlus::destroy()
 	}
 }
 
+int IniReaderPlus::Sync()
+{
+	std::ofstream file(_strfile.c_str(), ios::in);
+	if (!file.is_open())	
+		return -1;
+
+	auto it = _allLine.begin();
+	for (; it != _allLine.end(); ++it)
+	{
+		file.write((*it)->_src.c_str(), (*it)->_src.length());
+		file.write("\r\n", 2);
+	}
+	std::cout<<errno<<endl;
+	return 1;
+}
+
 IniReaderPlus::~IniReaderPlus() 
 {
 	this->destroy();
@@ -65,7 +81,8 @@ string IniReaderPlus::GetValue(const char * section, const char *szname)
 	return "";
 }
 
-string IniReaderPlus::GetOptValue(const char *section, const char *szname, const string &strdefault) {
+string IniReaderPlus::GetOptValue(const char *section, const char *szname, const string &strdefault) 
+{
 	string ret = GetValue(section, szname);
 	return (ret=="")? strdefault:ret;
 }
@@ -260,20 +277,11 @@ int IniReaderPlus::Modify(std::string &section, std::string &key, std::string &n
 
 list<LineInfo*>::iterator IniReaderPlus::find(const std::string &section, const string &key)
 {
-	auto it = _cfgDict.find(section);
-	if (it == _cfgDict.end())
-		return _allLine.end();
 
-	auto itInner = it->second->find(key);
-	if (itInner == it->second->end())
-		return _allLine.end();
-
-	int lineNum = -1;
-	lineNum = itInner->second->_lineNum;
 	list<LineInfo*>::iterator itList = _allLine.begin();
 	for (; itList != _allLine.end(); ++itList)
 	{
-		if (lineNum == (*itList)->_lineNum)
+		if (key == (*itList)->_key)
 		{
 			return itList;
 		}
@@ -296,16 +304,17 @@ list<LineInfo*>::iterator IniReaderPlus::find(const string &section)
 	return _allLine.end();
 }
 
-
-    // 默认在块的最后添加， mode = 1 在块的最开头添加
+// 默认在块的最后添加， mode = 1 在块的最开头添加
 int IniReaderPlus::AddBaseSection(const string &section, const string &newkey, const string &newval, int mode)
 {
+	// 1. 判断块是否存在
 	auto it = this->find(section);
 	if (it == _allLine.end())
 	{
 		return 0;
 	}
 
+	// 确定插入位置
 	auto operit = it;
 	auto pre = operit;
 	if (0 == mode)
@@ -329,21 +338,58 @@ int IniReaderPlus::AddBaseSection(const string &section, const string &newkey, c
 		std::string _key;
 		std::string _val;
 	*/
+	++pre;
+	// 3. 修正后续的 lineNum
+	auto m = pre;
+	for (; m != _allLine.end(); ++m)
+	{
+		(*pre)->_lineNum++; // 
+	}
+
 	LineInfo *li = new LineInfo();
-	li->_lineNum = (*pre)->_lineNum + 1;
+	li->_lineNum = (*pre)->_lineNum;
 	li->_src = newkey + " = " + newval;
 	li->_type = typ_field;
 	li->_key = newkey;
 	li->_val = newval; 
 	// insert 是在前面插入
-	_allLine.insert(++pre, li);
+	_allLine.insert(pre, li);
+
+	// 加入到 map 中
+	auto mit = _cfgDict.find(section);
+	if (mit != _cfgDict.end())
+	{
+		mit->second->insert(std::make_pair(newval, li));
+	}
+
 	return 1;
 }
-    // 默认加在原 key 的后面， mode = 1 在原 key 后面添加
+    // 默认加在原 key 的后面， mode = 1 在原 key 前面添加
 int IniReaderPlus::AddBaseField(const string &section, const string &key, 
 				const string &newkey, const string &newval, int mode)
 				
 {
+	auto it = this->find(section, key);
+	if (it == _allLine.end())
+		return 0;
+
+	auto insertPos = it;
+	int lineNum = (*it)->_lineNum;
+	if (0 == mode)
+	{
+		++insertPos;
+		++lineNum;
+	}
+	
+	LineInfo *li = new LineInfo();
+	li->_lineNum = lineNum;
+	li->_src = newkey + " = " + newval;
+	li->_type = typ_field;
+	li->_key = newkey;
+	li->_val = newval;
+	_allLine.insert(insertPos, li);
+	auto mit = _cfgDict.find(section);
+	mit->second->insert(std::make_pair(newval, li));
 	return 1;
 }
 

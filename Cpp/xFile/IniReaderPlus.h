@@ -40,6 +40,7 @@ public:
     IniReaderPlus(const string &strfile);
     ~IniReaderPlus();
     int Reload();
+    int Sync();
     // 返回：0 成功
     int ScanCfgFile();
     string GetValue(const char * section, const char *szname);
