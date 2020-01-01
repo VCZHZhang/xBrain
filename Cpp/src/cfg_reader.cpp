@@ -6,7 +6,7 @@
 //------- */
 
 #include "cfg_reader.h"
-#include "util_string.h"
+#include "xString/util_string.h"
 #include <iostream>
 #include <fstream>
 using std::string;
