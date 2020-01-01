@@ -196,7 +196,7 @@ int HttpPacker::calcTotalLen()
 
 void HttpPacker::toUpper(std::string &str)
 {
-	for (int i = 0; i < str.length(); ++i)
+	for (size_t i = 0; i < str.length(); ++i)
 		toupper(str[i]);
 }
 

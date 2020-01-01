@@ -32,7 +32,7 @@ HttpResponseParse::~HttpResponseParse()
 	std::vector<DS::DataNode*>  v;
 	for (std::map<int, DS::DataNode *>::iterator it = m_mBodys.begin(); it != m_mBodys.end(); ++it)
 		v.push_back(it->second);	
-	for (int i = 0; i < v.size(); ++i)
+	for (size_t i = 0; i < v.size(); ++i)
 	{
 		if (v[i])
 			delete v[i];
@@ -310,7 +310,7 @@ int HttpResponseParse::parseBodyByTransferEncoding()
 	char *handleStart = startStr + m_nHandledEnd;
 	std::string key;
 	std::string val;
-	int serivalNo = 0;
+	// int serivalNo = 0;
 	int found = 0;
 	int finished = 0;
 	while (1)

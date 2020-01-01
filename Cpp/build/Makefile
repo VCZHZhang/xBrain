@@ -14,7 +14,7 @@ DIR_EXEC = ../exec
 VPATH = .:./xFile
 TARGET = ../exec/Brain
 
-SRC_PATH = ../Cpp
+SRC_PATH = ../src
 DIRS = $(shell find $(SRC_PATH) -maxdepth 4 -type d)
 SRC_CPP += $(foreach dir, $(DIRS), $(wildcard $(dir)/*.cpp))
 SRC_C +=   $(foreach dir, $(DIRS), $(wildcard $(dir)/*.c))
