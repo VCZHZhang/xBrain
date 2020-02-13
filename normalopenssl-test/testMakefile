@@ -1,0 +1,2 @@
+gcc -c main.c  
+gcc main.o  -L/home/dengjunxing/mygithub/gm-out/testso -l:libtestso.a -o main
