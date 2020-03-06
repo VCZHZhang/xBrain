@@ -1,12 +1,18 @@
 # xBrain
-Common Function Set.
+	Some Language Common Function or Librarys.
 
 ## assemble 
-	汇编相关代码
+	Common Assembly Codes.	
+
 ## Cpp
-	C/C++ 语言库，包含文件操作，基本算法，网络IO
+	Cpp	Librarys, It maybe call the SCL codes. When you read the code, you didn't
+found the function implements, you can open the SCL directorys.
+
 ## Python
-	Python 语言相关代码
+	Python Codes. 
+
+## SCL
+	Simple C Library. 
 
 ## Shell 
-	常用 Shell 脚本
+	Common Shell Scripts.
