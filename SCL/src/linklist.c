@@ -17,7 +17,7 @@ void LinkListInit(struct LinkList *mylist)
 	mylist->tail.next = NULL;
 }
 
-int LinkListInsertHead(LinkList *mylist, int inval)
+LinkList* LinkListInsertHead(LinkList *mylist, int inval)
 {
 	struct Node *node = (Node*)malloc(sizeof(Node));
 	node->val = inval;
