@@ -83,7 +83,7 @@ emmstr* HttpPacker::Pack()
 
 	memcpy(buf + spos, m_sVersion.data(), m_sVersion.length());
 	spos += m_sVersion.length();
-	// ÇëÇóÐÐ½áÊø
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½
 	memcpy(buf + spos, "\r\n", strlen("\r\n"));
 	spos += strlen("\r\n");
 
@@ -130,28 +130,27 @@ emmstr* HttpPacker::Pack()
 	} while (0);
 	
 	
-	// ½Ó×ÅÒ»¸ö¿ÕÐÐ, ±íÊ¾ºóÃæµÄÄÚÈÝÊÇ body
+	// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ body
 	memcpy(buf + spos, "\r\n", strlen("\r\n"));
 	spos += strlen("\r\n");
 
 	if (m_eBody.buf && (0 != m_eBody.size))
 	{
-		// Ìî³ä body	
+		// ï¿½ï¿½ï¿½ body	
 		memcpy(buf + spos, m_eBody.buf, m_eBody.size);	
 		spos += m_eBody.size;
 	}
-
 
 	return &m_eHole;
 }
 
 int HttpPacker::calcTotalLen()
 {
-	// 1. ÏÈ¼ÆËã×Ü³¤£¬ÔÙ½øÐÐ¿Õ¼äµÄÉêÇë
+	// 1. ï¿½È¼ï¿½ï¿½ï¿½ï¿½Ü³ï¿½ï¿½ï¿½ï¿½Ù½ï¿½ï¿½Ð¿Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	int totalLen = 0;
-	// ÇëÇóÐÐ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	totalLen += m_sMethod.length();// POST
-	totalLen += SPACE_LEN;// ¿Õ¸ñ // POST 
+	totalLen += SPACE_LEN;// ï¿½Õ¸ï¿½ // POST 
 	totalLen += m_sUrl.length();// POST /hello/index.jsp
 	totalLen += SPACE_LEN;
 	totalLen += strlen("HTTP/");// POST /hello/index.jsp HTTP/
@@ -218,6 +217,7 @@ void HttpPacker::SetBody(const char *body, int len)
 
 	m_eBody.size = len;
 	m_eBody.buf = (char *)malloc(m_eBody.size);
+	memcpy(m_eBody.buf, body, len);
 	return ;
 }
 
